@@ -36,10 +36,8 @@ fn zero_sized_type() {
     assert_eq!(p.slots(), 0);
     assert_eq!(c.slots(), 1);
     assert!(p.push(ZeroSized).is_err());
-    assert!(c.peek().is_ok());
     assert!(c.pop().is_ok());
     assert_eq!(c.slots(), 0);
-    assert!(c.peek().is_err());
 }
 
 #[test]
@@ -130,8 +128,6 @@ fn trait_impls() {
     assert_eq!(p.push(42).unwrap_err().to_string(), "full ring buffer");
     assert_eq!(format!("{:?}", c.pop().unwrap_err()), "Empty");
     assert_eq!(c.pop().unwrap_err().to_string(), "empty ring buffer");
-    assert_eq!(format!("{:?}", c.peek().unwrap_err()), "Empty");
-    assert_eq!(c.peek().unwrap_err().to_string(), "empty ring buffer");
 
     let (another_p, another_c) = RingBuffer::<u8>::new(0);
     assert_ne!(p, another_p);

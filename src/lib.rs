@@ -64,12 +64,6 @@ use core::sync::atomic::{AtomicUsize, Ordering};
 mod cache_padded;
 use cache_padded::CachePadded;
 
-pub mod chunks;
-
-// This is used in the documentation.
-#[allow(unused_imports)]
-use chunks::WriteChunkUninit;
-
 /// A bounded single-producer single-consumer (SPSC) queue.
 ///
 /// Elements can be written with a [`Producer`] and read with a [`Consumer`],
@@ -552,33 +546,6 @@ impl<T> Consumer<T> {
             Ok(value)
         } else {
             Err(PopError::Empty)
-        }
-    }
-
-    /// Attempts to read an element from the queue without removing it.
-    ///
-    /// # Errors
-    ///
-    /// If the queue is empty, an error is returned.
-    ///
-    /// # Examples
-    ///
-    /// ```
-    /// use rtrb::{PeekError, RingBuffer};
-    ///
-    /// let (p, c) = RingBuffer::new(1);
-    ///
-    /// assert_eq!(c.peek(), Err(PeekError::Empty));
-    /// assert_eq!(p.push(10), Ok(()));
-    /// assert_eq!(c.peek(), Ok(&10));
-    /// assert_eq!(c.peek(), Ok(&10));
-    /// ```
-    pub fn peek(&self) -> Result<&T, PeekError> {
-        if let Some(head) = self.next_head() {
-            // SAFETY: head points to an initialized slot.
-            Ok(unsafe { &*self.buffer.slot_ptr(head) })
-        } else {
-            Err(PeekError::Empty)
         }
     }
 
